@@ -1,6 +1,16 @@
 const express = require('express');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+const db = require('knex')({
+    client: 'pg',
+    connection: {
+        host: '127.0.0.1',
+        port: 5432,
+        user: 'karan',
+        password: '',
+        database: 'smart-brain'
+    }
+});
 
 const app = express();
 
@@ -14,6 +24,7 @@ const database = {
         {
             id: '123',
             name: 'John',
+            password: 'cookies',
             email: 'john@gmail.com',
             entries: 0,
             joined: new Date()
@@ -21,6 +32,7 @@ const database = {
         {
             id: '124',
             name: 'Sally',
+            password: 'bananas',
             email: 'sally@gmail.com',
             entries: 0,
             joined: new Date()
@@ -46,9 +58,10 @@ app.post('/signin', (req, res) => {
     bcrypt.compare("veggies", '$2a$10$2fSi4olklSIbcyHial44r./6PxXTv1RCP4HbS6vlUvml22mMrbGGa', function (err, res) {
         console.log('second guess', res)
     });
+    console.log('req', req.body);
     if (req.body.email === database.users[0].email &&
         req.body.password === database.users[0].password) {
-        res.json('success');
+        res.json(database.users[0]);
     } else {
         res.status(400).json('error logging in');
     }
@@ -56,15 +69,16 @@ app.post('/signin', (req, res) => {
 
 app.post('/register', (req, res) => {
     const { email, name, password } = req.body;
-    database.users.push({
-        id: '125',
-        name: name,
-        email: email,
-        password: password,
-        entries: 0,
-        joined: new Date()
-    })
-    res.json(database.users[database.users.length - 1]);
+    db('users')
+        .returning('*')
+        .insert({
+            email: email,
+            name: name,
+            joined: new Date()
+        }).then(user => {
+            res.json(user[0]);
+        })
+        .catch(err => res.status(400).json('unable to register'))
 })
 
 app.get('/profile/:id', (req, res) => {
@@ -81,7 +95,7 @@ app.get('/profile/:id', (req, res) => {
     }
 })
 
-app.post('/image', (req, res) => {
+app.put('/image', (req, res) => {
     const { id } = req.body;
     let found = false;
     database.users.forEach(user => {
