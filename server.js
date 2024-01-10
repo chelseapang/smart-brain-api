@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+require('dotenv').config();
 const db = require('knex')({
     client: 'pg',
     connection: {

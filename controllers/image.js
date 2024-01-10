@@ -2,12 +2,11 @@ const { handle } = require("express/lib/application");
 
 const returnClarifaiRequestOptions = (imageUrl) => {
     // Your PAT (Personal Access Token) can be found in the portal under Authentification
-    //TODO: remove PAT before pushing to github
-    const PAT = '9581081912ff48b2a9b632deff281278';
+    const PAT = process.env.PAT;
     // Specify the correct user_id/app_id pairings
     // Since you're making inferences outside your app's scope
-    const USER_ID = 'cpang5';
-    const APP_ID = 'face-recognition-brain';
+    const USER_ID = process.env.USER_ID;
+    const APP_ID = process.env.APP_ID;
     // Change these to whatever model and image URL you want to use
     const MODEL_ID = 'face-detection';
     const IMAGE_URL = imageUrl;
