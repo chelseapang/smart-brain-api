@@ -5,11 +5,11 @@ require('dotenv').config();
 const db = require('knex')({
     client: 'pg',
     connection: {
-        host: '127.0.0.1',
+        host: process.env.HOST,
         port: 5432,
-        user: 'karan',
-        password: '',
-        database: 'smart-brain'
+        user: process.env.USERNAME,
+        password: process.env.PASSWORD,
+        database: process.env.DATABASE
     }
 });
 
